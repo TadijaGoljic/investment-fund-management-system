@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ganache
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ganache
+  template:
+    metadata:
+      labels:
+        app: ganache
+    spec:
+      containers:
+        - name: ganache
+          image: trufflesuite/ganache-cli
+          ports:
+            - containerPort: 8545
+          args:
+            - "--host"
+            - "0.0.0.0"
+            - "--port"
+            - "8545"
+            - "--accounts"
+            - "10"
+            - "--deterministic"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ganache
+spec:
+  selector:
+    app: ganache
+  ports:
+    - protocol: TCP
+      port: 8545
+      targetPort: 8545
+  type: LoadBalancer

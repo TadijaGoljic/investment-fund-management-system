@@ -1,0 +1,7 @@
+flask
+flask-jwt-extended
+flask-sqlalchemy
+pymongo
+redis
+web3
+py-solc-x

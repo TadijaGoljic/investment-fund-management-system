@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: director
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: director
+  template:
+    metadata:
+      labels:
+        app: director
+    spec:
+      containers:
+        - name: director
+          image: director:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5002
+          env:
+            - name: FLASK_APP
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: DIRECTOR_FLASK_APP
+            - name: MONGO_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: MONGO_HOST
+            - name: MONGO_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: MONGO_PORT
+            - name: MONGO_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: MONGO_DATABASE
+            - name: MONGO_ASSETS_COLLECTION
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: MONGO_ASSETS_COLLECTION
+            - name: MONGO_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: MONGO_USERNAME
+            - name: MONGO_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: MONGO_PASSWORD
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: REDIS_HOST
+            - name: REDIS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: REDIS_PORT
+            - name: BLOCKCHAIN_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: BLOCKCHAIN_HOST
+            - name: BLOCKCHAIN_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: BLOCKCHAIN_PORT
+            - name: JWT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: JWT_SECRET_KEY
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: director
+spec:
+  type: LoadBalancer
+  selector:
+    app: director
+  ports:
+    - port: 5002
+      targetPort: 5002
